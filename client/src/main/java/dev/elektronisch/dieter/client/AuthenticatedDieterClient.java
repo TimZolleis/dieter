@@ -35,11 +35,7 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
         this.authenticationService = getRetrofit().create(AuthenticationService.class);
         login();
 
-        try {
-            System.out.println(authenticationService.test().execute().body());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 
     @Override

@@ -18,7 +18,7 @@
     </properties>
 
     <build>
-        <finalName>dieter-client-${project.version}</finalName>
+        <finalName>dieter-daemon-${project.version}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -50,6 +50,54 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>2.1.2</version>
+                <executions>
+                    <execution>
+                        <id>l4j-gui</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>console</headerType>
+                            <outfile>target/DieterDaemon.exe</outfile>
+                            <jar>target/${build.finalName}.jar</jar>
+                            <downloadUrl>https://adoptium.net/</downloadUrl>
+                            <supportUrl>https://devicedieter.de/</supportUrl>
+                            <icon>src/main/resources/app.ico</icon>
+                            <jre>
+                                <minVersion>17</minVersion>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>1.0.0.0</fileVersion>
+                                <txtFileVersion>${project.version}</txtFileVersion>
+                                <fileDescription>Yet another device management system.</fileDescription>
+                                <copyright>Linus Groschke &lt;linus@elektronisch.dev&gt;</copyright>
+                                <productVersion>1.0.0.0</productVersion>
+                                <txtProductVersion>${project.version}</txtProductVersion>
+                                <productName>DieterDaemon</productName>
+                                <internalName>DieterDaemon</internalName>
+                                <originalFilename>DieterDaemon.exe</originalFilename>
+                                <language>GERMAN</language>
+                            </versionInfo>
+                            <messages>
+                                <startupErr>Beim Starten der Anwendung ist ein Fehler aufgetreten.</startupErr>
+                                <bundledJreErr>Die Anwendung benötigt eine Java-Laufzeitumgebung.</bundledJreErr>
+                                <jreVersionErr>Die Anwendung benötigt mindestens eine Java-Laufzeitumgebung der
+                                    Version
+                                </jreVersionErr>
+                                <launcherErr>Der Registrierungsschlüssel verweist auf eine inexistente, oder beschädigte
+                                    Java-Laufzeitumgebung.
+                                </launcherErr>
+                                <instanceAlreadyExistsMsg>Die Anwendung läuft bereits.</instanceAlreadyExistsMsg>
+                            </messages>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
