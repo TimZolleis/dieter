@@ -46,7 +46,7 @@ public final class AuthenticationService {
     }
 
     public TokenResponse handleLogin(final LoginRequest request) {
-        return repository.findByUsername(request.getUsername())
+        return repository.findByUsernameOrEmail(request.getUsername(), request.getUsername())
                 .filter(account -> passwordEncoder.matches(request.getPassword(), account.getPassword()))
                 .map(account -> {
                     final Date createdDate = new Date();
