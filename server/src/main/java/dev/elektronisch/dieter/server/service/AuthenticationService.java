@@ -7,7 +7,9 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import dev.elektronisch.dieter.server.entity.AccountEntity;
+import dev.elektronisch.dieter.server.exception.EmailTakenException;
 import dev.elektronisch.dieter.server.exception.InvalidCredentialsException;
+import dev.elektronisch.dieter.server.exception.UsernameTakenException;
 import dev.elektronisch.dieter.server.model.LoginRequest;
 import dev.elektronisch.dieter.server.model.RegistrationRequest;
 import dev.elektronisch.dieter.server.model.TokenResponse;
@@ -56,13 +58,13 @@ public final class AuthenticationService {
     }
 
     public void handleRegistration(final RegistrationRequest request) {
-        /*if (repository.existsByUsername(request.getUsername())) {
+        if (repository.existsByUsername(request.getUsername())) {
             throw new UsernameTakenException();
         }
 
         if (repository.existsByEmail(request.getUsername())) {
             throw new EmailTakenException();
-        }*/
+        }
 
         repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
     }
