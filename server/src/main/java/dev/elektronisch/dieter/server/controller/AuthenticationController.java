@@ -1,9 +1,10 @@
 package dev.elektronisch.dieter.server.controller;
 
+import dev.elektronisch.dieter.common.model.authentication.VerificationRequest;
 import dev.elektronisch.dieter.server.exception.AlreadyAuthenticatedException;
-import dev.elektronisch.dieter.server.model.LoginRequest;
-import dev.elektronisch.dieter.server.model.RegistrationRequest;
-import dev.elektronisch.dieter.server.model.TokenResponse;
+import dev.elektronisch.dieter.common.model.authentication.LoginRequest;
+import dev.elektronisch.dieter.common.model.authentication.RegistrationRequest;
+import dev.elektronisch.dieter.common.model.authentication.TokenResponse;
 import dev.elektronisch.dieter.server.security.JWTAuthentication;
 import dev.elektronisch.dieter.server.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
@@ -32,12 +33,22 @@ public final class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<TokenResponse> register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<Void> register(@RequestBody RegistrationRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() instanceof JWTAuthentication) {
             throw new AlreadyAuthenticatedException();
         }
 
         service.handleRegistration(request);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<Void> register(@RequestBody VerificationRequest request) {
+        if (SecurityContextHolder.getContext().getAuthentication() instanceof JWTAuthentication) {
+            throw new AlreadyAuthenticatedException();
+        }
+
+        service.handleVerification(request);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

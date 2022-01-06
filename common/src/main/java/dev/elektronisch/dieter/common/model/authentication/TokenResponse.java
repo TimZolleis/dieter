@@ -1,4 +1,4 @@
-package dev.elektronisch.dieter.server.model;
+package dev.elektronisch.dieter.common.model.authentication;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

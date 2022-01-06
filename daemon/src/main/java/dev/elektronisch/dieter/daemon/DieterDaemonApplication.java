@@ -1,14 +1,14 @@
-package dev.elektronisch.dieter.client;
+package dev.elektronisch.dieter.daemon;
 
+import dev.elektronisch.dieter.client.AuthenticatedDieterClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configurator;
 
 @Slf4j
-public final class DieterClientApplication {
+public final class DieterDaemonApplication {
 
     public void enable() {
+        final AuthenticatedDieterClient client = new AuthenticatedDieterClient("elektr0nisch", "test123");
     }
 
     public void disable() {
@@ -16,12 +16,12 @@ public final class DieterClientApplication {
     }
 
     public static void main(String[] args) {
-        DieterClientApplication application = new DieterClientApplication();
+        DieterDaemonApplication application = new DieterDaemonApplication();
 
         // Registering shutdown hook
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             application.disable();
-            Configurator.shutdown((LoggerContext) LogManager.getContext());
+            LogManager.shutdown();
         }));
 
         // Starting the application in a separate thread

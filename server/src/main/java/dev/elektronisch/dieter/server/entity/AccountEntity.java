@@ -3,23 +3,31 @@ package dev.elektronisch.dieter.server.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "dieter_accounts")
 @NoArgsConstructor
 @Getter
-@EqualsAndHashCode(of = "id")
+@Setter
+@EqualsAndHashCode(of = "uuid")
 public final class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator"
+    )
     @Column(name = "id", nullable = false, updatable = false)
-    private Integer id;
+    private UUID uuid;
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     @Column(name = "first_name", nullable = false)
@@ -32,6 +40,8 @@ public final class AccountEntity {
     private String password;
     @Column(name = "admin", nullable = false)
     private boolean admin = false;
+    @Column(name = "verified", nullable = false)
+    private boolean verified = false;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)

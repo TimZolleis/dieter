@@ -37,7 +37,7 @@ public final class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
             String authToken = tokenHeader.substring(7);
 
             // Verify token
-            final DecodedJWT verifiedToken = authenticationService.verifyToken(authToken);
+            DecodedJWT verifiedToken = authenticationService.verifyToken(authToken);
             if (verifiedToken != null) {
                 SecurityContextHolder.getContext().setAuthentication(new JWTAuthentication(verifiedToken));
             }

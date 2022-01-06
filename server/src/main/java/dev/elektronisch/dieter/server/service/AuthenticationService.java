@@ -6,13 +6,12 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import dev.elektronisch.dieter.common.model.authentication.LoginRequest;
+import dev.elektronisch.dieter.common.model.authentication.RegistrationRequest;
+import dev.elektronisch.dieter.common.model.authentication.TokenResponse;
+import dev.elektronisch.dieter.common.model.authentication.VerificationRequest;
 import dev.elektronisch.dieter.server.entity.AccountEntity;
-import dev.elektronisch.dieter.server.exception.EmailTakenException;
-import dev.elektronisch.dieter.server.exception.InvalidCredentialsException;
-import dev.elektronisch.dieter.server.exception.UsernameTakenException;
-import dev.elektronisch.dieter.server.model.LoginRequest;
-import dev.elektronisch.dieter.server.model.RegistrationRequest;
-import dev.elektronisch.dieter.server.model.TokenResponse;
+import dev.elektronisch.dieter.server.exception.*;
 import dev.elektronisch.dieter.server.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,12 +48,15 @@ public final class AuthenticationService {
         return repository.findByUsernameOrEmail(request.getUsername(), request.getUsername())
                 .filter(account -> passwordEncoder.matches(request.getPassword(), account.getPassword()))
                 .map(account -> {
-                    final Date createdDate = new Date();
-                    final Date expirationDate = calculateExpirationDate(createdDate);
-                    final String token = createToken(account, createdDate, expirationDate);
+                    if (!account.isVerified()) {
+                        throw new NotVerifiedException();
+                    }
+
+                    Date createdDate = new Date();
+                    Date expirationDate = calculateExpirationDate(createdDate);
+                    String token = createToken(account, createdDate, expirationDate);
                     return new TokenResponse(token, expirationDate.getTime());
-                })
-                .orElseThrow(InvalidCredentialsException::new);
+                }).orElseThrow(InvalidCredentialsException::new);
     }
 
     public void handleRegistration(final RegistrationRequest request) {
@@ -67,6 +69,19 @@ public final class AuthenticationService {
         }
 
         repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
+
+        // TODO send verification mail
+    }
+
+    public void handleVerification(final VerificationRequest request) {
+        AccountEntity account = repository.findById(request.getUuid())
+                .orElseThrow(AccountNotFoundException::new);
+        if (account.isVerified()) {
+            throw new AlreadyVerifiedException();
+        }
+
+        account.setVerified(true);
+        repository.save(account);
     }
 
     public DecodedJWT verifyToken(final String token) {
@@ -78,7 +93,7 @@ public final class AuthenticationService {
     }
 
     private String createToken(final AccountEntity account, final Date createdDate, final Date expirationDate) {
-        final JWTCreator.Builder builder = JWT.create()
+        JWTCreator.Builder builder = JWT.create()
                 .withSubject(account.getUsername())
                 .withIssuedAt(createdDate)
                 .withIssuer(ISSUER)

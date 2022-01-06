@@ -2,6 +2,6 @@ package dev.elektronisch.dieter.server.exception;
 
 import io.github.wimdeblauwe.errorhandlingspringbootstarter.ResponseErrorCode;
 
-@ResponseErrorCode("USERNAME_TAKEN")
-public final class UsernameTakenException extends RuntimeException {
+@ResponseErrorCode("ACCOUNT_NOT_FOUND")
+public final class AccountNotFoundException extends RuntimeException {
 }
