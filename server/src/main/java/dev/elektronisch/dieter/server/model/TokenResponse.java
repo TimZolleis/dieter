@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public final class LoginResponse {
+public final class TokenResponse {
     private String token;
     private long expirationDate;
 }

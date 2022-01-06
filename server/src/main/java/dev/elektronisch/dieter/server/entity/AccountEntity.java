@@ -3,9 +3,11 @@ package dev.elektronisch.dieter.server.entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
-import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "dieter_accounts")
@@ -15,7 +17,7 @@ import java.sql.Timestamp;
 public final class AccountEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Integer id;
     @Column(name = "username", nullable = false, unique = true)
@@ -30,8 +32,20 @@ public final class AccountEntity {
     private String password;
     @Column(name = "admin", nullable = false)
     private boolean admin = false;
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private Date createdAt;
+    @UpdateTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_at", nullable = false)
-    private Timestamp modifiedAt;
+    private Date modifiedAt;
+
+    public AccountEntity(String username, String firstName, String lastName, String email, String password) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+    }
 }

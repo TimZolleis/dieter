@@ -7,14 +7,15 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import dev.elektronisch.dieter.server.entity.AccountEntity;
+import dev.elektronisch.dieter.server.exception.InvalidCredentialsException;
 import dev.elektronisch.dieter.server.model.LoginRequest;
-import dev.elektronisch.dieter.server.model.LoginResponse;
+import dev.elektronisch.dieter.server.model.RegistrationRequest;
+import dev.elektronisch.dieter.server.model.TokenResponse;
 import dev.elektronisch.dieter.server.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 
 @Service
@@ -42,16 +43,28 @@ public final class AuthenticationService {
         this.millisToLive = millisToLive;
     }
 
-    public LoginResponse handleLogin(final LoginRequest request) {
+    public TokenResponse handleLogin(final LoginRequest request) {
         return repository.findByUsername(request.getUsername())
                 .filter(account -> passwordEncoder.matches(request.getPassword(), account.getPassword()))
                 .map(account -> {
                     final Date createdDate = new Date();
                     final Date expirationDate = calculateExpirationDate(createdDate);
                     final String token = createToken(account, createdDate, expirationDate);
-                    return new LoginResponse(token, expirationDate.getTime());
+                    return new TokenResponse(token, expirationDate.getTime());
                 })
-                .orElseThrow(() -> new EntityNotFoundException("Invalid credentials"));
+                .orElseThrow(InvalidCredentialsException::new);
+    }
+
+    public void handleRegistration(final RegistrationRequest request) {
+        /*if (repository.existsByUsername(request.getUsername())) {
+            throw new UsernameTakenException();
+        }
+
+        if (repository.existsByEmail(request.getUsername())) {
+            throw new EmailTakenException();
+        }*/
+
+        repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
     }
 
     public DecodedJWT verifyToken(final String token) {
