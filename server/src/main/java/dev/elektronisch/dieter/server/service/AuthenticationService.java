@@ -31,10 +31,10 @@ public final class AuthenticationService {
     private final JWTVerifier verifier;
     private final long millisToLive;
 
-    public AuthenticationService(AccountRepository repository,
-                                 PasswordEncoder passwordEncoder,
-                                 @Value("${jwt.secret}") String secret,
-                                 @Value("${jwt.millisToLive}") long millisToLive) {
+    public AuthenticationService(final AccountRepository repository,
+                                 final PasswordEncoder passwordEncoder,
+                                 @Value("${jwt.secret}") final String secret,
+                                 @Value("${jwt.millisToLive}") final long millisToLive) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.algorithm = Algorithm.HMAC512(secret);
@@ -52,9 +52,9 @@ public final class AuthenticationService {
                         throw new NotVerifiedException();
                     }
 
-                    Date createdDate = new Date();
-                    Date expirationDate = calculateExpirationDate(createdDate);
-                    String token = createToken(account, createdDate, expirationDate);
+                    final Date createdDate = new Date();
+                    final Date expirationDate = calculateExpirationDate(createdDate);
+                    final String token = createToken(account, createdDate, expirationDate);
                     return new TokenResponse(token, expirationDate.getTime());
                 }).orElseThrow(InvalidCredentialsException::new);
     }
@@ -74,7 +74,7 @@ public final class AuthenticationService {
     }
 
     public void handleVerification(final VerificationRequest request) {
-        AccountEntity account = repository.findById(request.getUuid())
+        final AccountEntity account = repository.findById(request.getUuid())
                 .orElseThrow(AccountNotFoundException::new);
         if (account.isVerified()) {
             throw new AlreadyVerifiedException();
@@ -93,7 +93,7 @@ public final class AuthenticationService {
     }
 
     private String createToken(final AccountEntity account, final Date createdDate, final Date expirationDate) {
-        JWTCreator.Builder builder = JWT.create()
+        final JWTCreator.Builder builder = JWT.create()
                 .withSubject(account.getUsername())
                 .withIssuedAt(createdDate)
                 .withIssuer(ISSUER)
@@ -107,7 +107,7 @@ public final class AuthenticationService {
         return builder.sign(algorithm);
     }
 
-    private Date calculateExpirationDate(Date createdDate) {
+    private Date calculateExpirationDate(final Date createdDate) {
         return new Date(createdDate.getTime() + millisToLive);
     }
 }

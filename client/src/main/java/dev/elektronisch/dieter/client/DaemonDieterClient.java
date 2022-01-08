@@ -9,11 +9,11 @@ public final class DaemonDieterClient extends AbstractDieterClient {
 
     private final UUID deviceIdentifier;
 
-    public DaemonDieterClient(UUID deviceIdentifier) {
+    public DaemonDieterClient(final UUID deviceIdentifier) {
         this(DEFAULT_ENDPOINT_URL, deviceIdentifier);
     }
 
-    public DaemonDieterClient(String endpointUrl, UUID deviceIdentifier) {
+    public DaemonDieterClient(final String endpointUrl, final UUID deviceIdentifier) {
         super(endpointUrl);
         this.deviceIdentifier = deviceIdentifier;
     }

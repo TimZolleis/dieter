@@ -19,12 +19,12 @@ public final class AuthenticationController {
 
     private final AuthenticationService service;
 
-    public AuthenticationController(AuthenticationService service) {
+    public AuthenticationController(final AuthenticationService service) {
         this.service = service;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenResponse> login(@RequestBody final LoginRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() instanceof JWTAuthentication) {
             throw new AlreadyAuthenticatedException();
         }
@@ -33,7 +33,7 @@ public final class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity<Void> register(@RequestBody final RegistrationRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() instanceof JWTAuthentication) {
             throw new AlreadyAuthenticatedException();
         }
@@ -43,7 +43,7 @@ public final class AuthenticationController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> register(@RequestBody VerificationRequest request) {
+    public ResponseEntity<Void> register(@RequestBody final VerificationRequest request) {
         if (SecurityContextHolder.getContext().getAuthentication() instanceof JWTAuthentication) {
             throw new AlreadyAuthenticatedException();
         }

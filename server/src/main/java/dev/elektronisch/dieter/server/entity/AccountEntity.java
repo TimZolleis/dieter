@@ -51,7 +51,11 @@ public final class AccountEntity {
     @Column(name = "modified_at", nullable = false)
     private Date modifiedAt;
 
-    public AccountEntity(String username, String firstName, String lastName, String email, String password) {
+    public AccountEntity(final String username,
+                         final String firstName,
+                         final String lastName,
+                         final String email,
+                         final String password) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

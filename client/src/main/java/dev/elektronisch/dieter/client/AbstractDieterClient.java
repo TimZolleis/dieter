@@ -25,7 +25,7 @@ public abstract class AbstractDieterClient {
     private final Gson gson;
     private final Retrofit retrofit;
 
-    protected AbstractDieterClient(String endpointUrl) {
+    protected AbstractDieterClient(final String endpointUrl) {
         this.endpointUrl = endpointUrl;
 
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();

@@ -11,7 +11,7 @@ public final class TestController {
 
     @GetMapping("/test")
     public ResponseEntity<String> test() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return ResponseEntity.ok("\"Hello world, " + authentication.getPrincipal() + "!\"");
     }
 }

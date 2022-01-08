@@ -35,7 +35,7 @@ public record JWTAuthentication(DecodedJWT decodedJWT) implements Authentication
     }
 
     @Override
-    public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+    public void setAuthenticated(final boolean isAuthenticated) throws IllegalArgumentException {
 
     }
 

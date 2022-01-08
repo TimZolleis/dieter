@@ -23,19 +23,17 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
     private String authorizationToken;
     private long tokenExpirationDate;
 
-    public AuthenticatedDieterClient(String username, String password) {
+    public AuthenticatedDieterClient(final String username, final String password) {
         this(DEFAULT_ENDPOINT_URL, username, password);
     }
 
-    public AuthenticatedDieterClient(String endpointUrl, String username, String password) {
+    public AuthenticatedDieterClient(final String endpointUrl, final String username, final String password) {
         super(endpointUrl);
         this.username = username;
         this.password = password;
 
         this.authenticationService = getRetrofit().create(AuthenticationService.class);
         login();
-
-
     }
 
     @Override
@@ -47,29 +45,28 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
                         .addHeader("Authorization", "Bearer " + authorizationToken)
                         .build();
             }
-
             return chain.proceed(request);
         };
     }
 
     private void login() throws ApiException {
-        LoginRequest loginRequest = new LoginRequest(username, password);
-        Call<TokenResponse> loginCall = authenticationService.login(loginRequest);
+        final LoginRequest loginRequest = new LoginRequest(username, password);
+        final Call<TokenResponse> loginCall = authenticationService.login(loginRequest);
 
         try {
-            Response<TokenResponse> response = loginCall.execute();
+            final Response<TokenResponse> response = loginCall.execute();
             if (response.code() != 200) {
                 throw new ApiException(parseError(response));
             }
 
-            TokenResponse tokenResponse = response.body();
+            final TokenResponse tokenResponse = response.body();
             if (tokenResponse == null) {
                 return;
             }
 
             authorizationToken = tokenResponse.getToken();
             tokenExpirationDate = tokenResponse.getExpirationDate();
-        } catch (final IOException e) {
+        } catch (IOException e) {
             log.error("An exception occurred while logging-in", e);
         }
     }

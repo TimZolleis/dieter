@@ -22,22 +22,24 @@ public final class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
     private final AuthenticationService authenticationService;
     private final String headerName;
 
-    public JWTAuthenticationTokenFilter(AuthenticationService authenticationService,
-                                        @Value("${jwt.header}") String headerName) {
+    public JWTAuthenticationTokenFilter(final AuthenticationService authenticationService,
+                                        @Value("${jwt.header}") final String headerName) {
         this.authenticationService = authenticationService;
         this.headerName = headerName;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull FilterChain chain) throws ServletException, IOException {
-        String tokenHeader = request.getHeader(headerName);
+    protected void doFilterInternal(final HttpServletRequest request,
+                                    @NotNull final HttpServletResponse response,
+                                    @NotNull final FilterChain chain) throws ServletException, IOException {
+        final String tokenHeader = request.getHeader(headerName);
 
         // If bearer token is present
         if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
-            String authToken = tokenHeader.substring(7);
+            final String authToken = tokenHeader.substring(7);
 
             // Verify token
-            DecodedJWT verifiedToken = authenticationService.verifyToken(authToken);
+            final DecodedJWT verifiedToken = authenticationService.verifyToken(authToken);
             if (verifiedToken != null) {
                 SecurityContextHolder.getContext().setAuthentication(new JWTAuthentication(verifiedToken));
             }
