@@ -1,0 +1,13 @@
+<service>
+    <id>DieterDaemon</id>
+    <name>DieterDaemon Service</name>
+    <executable>C:\Program Files\Dieter\DieterDaemon.exe</executable>
+    <description>Yet another device management system.</description>
+    <workingdirectory>C:\Program Files\Dieter</workingdirectory>
+    <onfailure action="restart" delay="30 sec"/>
+    <log mode="roll-by-size">
+        <sizeThreshold>10240</sizeThreshold>
+        <keepFiles>8</keepFiles>
+    </log>
+    <logpath>C:\Program Files\Dieter\logs</logpath>
+</service>
