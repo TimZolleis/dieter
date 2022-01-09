@@ -78,7 +78,9 @@ public abstract class AbstractDieterDaemonApplication {
                         try {
                             final UUID deviceKey = UUID.fromString(rawDeviceKey);
                             config.setDeviceKey(deviceKey);
-                            ConfigurationUtil.saveConfiguration(configurationFile, config);
+                            if (ConfigurationUtil.saveConfiguration(configurationFile, config)) {
+                                log.info("Key set. Restart machine now!");
+                            }
                         } catch (final IllegalArgumentException e) {
                             log.error("Invalid device key!");
                         }

@@ -20,6 +20,8 @@ public final class ConfigurationUtil {
     }
 
     public static DaemonConfig readConfiguration(File file) {
+        if (!file.exists()) return null;
+
         try (final JsonReader reader = new JsonReader(new FileReader(file))) {
             return GSON.fromJson(reader, DaemonConfig.class);
         } catch (final IOException e) {
@@ -29,6 +31,8 @@ public final class ConfigurationUtil {
     }
 
     public static boolean saveConfiguration(File file, DaemonConfig config) {
+        if (!file.exists()) return false;
+
         try (final JsonWriter writer = new JsonWriter(new FileWriter(file))) {
             GSON.toJson(config, DaemonConfig.class, writer);
             return true;
