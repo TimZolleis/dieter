@@ -1,4 +1,4 @@
-package dev.elektronisch.dieter.daemon.common.config;
+package dev.elektronisch.dieter.daemon.common.configuration;
 
 import com.google.gson.Gson;
 import com.google.gson.stream.JsonReader;
@@ -19,22 +19,22 @@ public final class ConfigurationUtil {
 
     }
 
-    public static DaemonConfig readConfiguration(File file) {
+    public static DaemonConfiguration readConfiguration(File file) {
         if (!file.exists()) return null;
 
         try (final JsonReader reader = new JsonReader(new FileReader(file))) {
-            return GSON.fromJson(reader, DaemonConfig.class);
+            return GSON.fromJson(reader, DaemonConfiguration.class);
         } catch (final IOException e) {
             log.error("An error occurred while reading configuration", e);
         }
         return null;
     }
 
-    public static boolean saveConfiguration(File file, DaemonConfig config) {
+    public static boolean saveConfiguration(File file, DaemonConfiguration config) {
         if (!file.exists()) return false;
 
         try (final JsonWriter writer = new JsonWriter(new FileWriter(file))) {
-            GSON.toJson(config, DaemonConfig.class, writer);
+            GSON.toJson(config, DaemonConfiguration.class, writer);
             return true;
         } catch (final IOException e) {
             log.error("An error occurred while writing configuration", e);

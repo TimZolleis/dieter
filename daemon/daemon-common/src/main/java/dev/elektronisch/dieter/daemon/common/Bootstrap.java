@@ -14,7 +14,7 @@ public final class Bootstrap {
 
     }
 
-    public static void run(final Supplier<AbstractDieterDaemonApplication> supplier, final String[] args) {
+    public static void run(final Supplier<AbstractDieterDaemonApplication> supplier) {
         final AbstractDieterDaemonApplication application = supplier.get();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -22,7 +22,7 @@ public final class Bootstrap {
             Configurator.shutdown((LoggerContext) LogManager.getContext());
         }));
 
-        new Thread(application::internalEnable).start();
+        new Thread(application::init).start();
 
         try {
             synchronized (application) {
