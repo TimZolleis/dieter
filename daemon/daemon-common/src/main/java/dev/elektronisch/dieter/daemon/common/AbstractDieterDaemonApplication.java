@@ -1,5 +1,6 @@
 package dev.elektronisch.dieter.daemon.common;
 
+import com.google.common.base.Preconditions;
 import dev.elektronisch.dieter.client.DaemonDieterClient;
 import dev.elektronisch.dieter.daemon.common.configuration.ConfigurationUtil;
 import dev.elektronisch.dieter.daemon.common.configuration.DaemonConfiguration;
@@ -7,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Console;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
@@ -31,6 +34,41 @@ public abstract class AbstractDieterDaemonApplication {
     void internalDisable() {
         log.info("Disabling operating-system implementation...");
         disable();
+    }
+
+    void internalInstall(final UUID deviceKey) {
+        Preconditions.checkArgument(!configurationFile.exists(), "configuration must not exist");
+
+        log.info("Creating configuration...");
+        final Path configurationFilePath = configurationFile.toPath();
+        try {
+            Files.createFile(configurationFilePath);
+        } catch (final IOException e) {
+            log.error("An error occurred while creating configuration", e);
+            System.exit(1);
+        }
+
+        final DaemonConfiguration configuration = new DaemonConfiguration(getClass().getPackage().getImplementationVersion(), deviceKey);
+        ConfigurationUtil.saveConfiguration(configurationFile, configuration);
+
+        log.info("Launching operating-system specific installation...");
+        install(deviceKey);
+    }
+
+    void internalUninstall() {
+        Preconditions.checkArgument(configurationFile.exists(), "configuration must exist");
+
+        log.info("Deleting configuration...");
+        final Path configurationFilePath = configurationFile.toPath();
+        try {
+            Files.delete(configurationFilePath);
+        } catch (final IOException e) {
+            log.error("An error occurred while deleting configuration", e);
+            System.exit(1);
+        }
+
+        log.info("Launching operating-system specific uninstallation...");
+        uninstall();
     }
 
     void init() {
@@ -81,7 +119,14 @@ public abstract class AbstractDieterDaemonApplication {
                         continue;
                     }
 
-                    install();
+                    log.info("Please enter device key:");
+                    final UUID deviceKey = readUUIDFromConsole();
+                    if (deviceKey == null) {
+                        log.error("Invalid device key!");
+                        continue;
+                    }
+
+                    internalInstall(deviceKey);
                     System.exit(0);
                 }
                 case "uninstall" -> {
@@ -90,7 +135,7 @@ public abstract class AbstractDieterDaemonApplication {
                         continue;
                     }
 
-                    uninstall();
+                    internalUninstall();
                     System.exit(0);
                 }
                 case "configure" -> {
@@ -100,19 +145,19 @@ public abstract class AbstractDieterDaemonApplication {
                     }
 
                     log.info("Please enter new device key:");
-                    final String rawDeviceKey = console.readLine();
-                    try {
-                        final UUID deviceKey = UUID.fromString(rawDeviceKey);
-                        configuration.setDeviceKey(deviceKey);
-                        if (ConfigurationUtil.saveConfiguration(configurationFile, configuration)) {
-                            log.info("Key was set successfully! Do you want to restart now? (y/n)");
-                            final String restart = console.readLine();
-                            if (restart.equalsIgnoreCase("y")) {
-                                restartSystem();
-                            }
-                        }
-                    } catch (final IllegalArgumentException e) {
+                    final UUID deviceKey = readUUIDFromConsole();
+                    if (deviceKey == null) {
                         log.error("Invalid device key!");
+                        continue;
+                    }
+
+                    configuration.setDeviceKey(deviceKey);
+                    if (ConfigurationUtil.saveConfiguration(configurationFile, configuration)) {
+                        log.info("Key was set successfully! Do you want to restart now? (y/n)");
+                        final String restart = console.readLine();
+                        if (restart.equalsIgnoreCase("y")) {
+                            restartSystem();
+                        }
                     }
                 }
                 default -> log.error("Invalid option!");
@@ -124,7 +169,7 @@ public abstract class AbstractDieterDaemonApplication {
 
     public abstract void disable();
 
-    public abstract void install();
+    public abstract void install(final UUID deviceKey);
 
     public abstract void uninstall();
 
@@ -139,5 +184,14 @@ public abstract class AbstractDieterDaemonApplication {
     private File determineWorkingDirectory() {
         final Path currentRelativePath = Paths.get("");
         return currentRelativePath.toAbsolutePath().toFile();
+    }
+
+    private UUID readUUIDFromConsole() {
+        final String rawDeviceKey = System.console().readLine();
+        try {
+            return UUID.fromString(rawDeviceKey);
+        } catch (final IllegalArgumentException ignored) {
+            return null;
+        }
     }
 }

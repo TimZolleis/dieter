@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 public final class DieterDaemonApplication extends AbstractDieterDaemonApplication {
@@ -24,7 +25,7 @@ public final class DieterDaemonApplication extends AbstractDieterDaemonApplicati
     }
 
     @Override
-    public void install() {
+    public void install(final UUID deviceKey) {
 
     }
 
