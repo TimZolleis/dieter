@@ -22,7 +22,7 @@ public final class Bootstrap {
             Configurator.shutdown((LoggerContext) LogManager.getContext());
         }));
 
-        new Thread(application::init).start();
+        new Thread(application::internalEnable).start();
 
         try {
             synchronized (application) {

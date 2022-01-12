@@ -3,16 +3,18 @@ package dev.elektronisch.dieter.daemon;
 import com.sun.security.auth.module.NTSystem;
 import dev.elektronisch.dieter.daemon.common.AbstractDieterDaemonApplication;
 import dev.elektronisch.dieter.daemon.common.Bootstrap;
+import dev.elektronisch.dieter.daemon.common.installer.AbstractApplicationInstaller;
+import dev.elektronisch.dieter.daemon.installer.ApplicationInstaller;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.UUID;
 
 @Slf4j
 public final class DieterDaemonApplication extends AbstractDieterDaemonApplication {
 
     private final File applicationDirectory = new File("C:\\Program Files\\Dieter");
+    private final ApplicationInstaller installer = new ApplicationInstaller(this);
 
     @Override
     public void enable() {
@@ -25,17 +27,7 @@ public final class DieterDaemonApplication extends AbstractDieterDaemonApplicati
     }
 
     @Override
-    public void install(final UUID deviceKey) {
-
-    }
-
-    @Override
-    public void uninstall() {
-
-    }
-
-    @Override
-    public void shutdownSystem() {
+    public void shutdownMachine() {
         try {
             Runtime.getRuntime().exec("shutdown /s /f /t 0");
         } catch (final IOException e) {
@@ -44,12 +36,17 @@ public final class DieterDaemonApplication extends AbstractDieterDaemonApplicati
     }
 
     @Override
-    public void restartSystem() {
+    public void restartMachine() {
         try {
             Runtime.getRuntime().exec("shutdown /r /f /t 0");
         } catch (final IOException e) {
             log.error("An error occurred while restarting system");
         }
+    }
+
+    @Override
+    public AbstractApplicationInstaller getInstaller() {
+        return installer;
     }
 
     @Override
