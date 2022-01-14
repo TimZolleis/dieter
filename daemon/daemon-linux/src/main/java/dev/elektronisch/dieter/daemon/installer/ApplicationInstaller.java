@@ -2,6 +2,7 @@ package dev.elektronisch.dieter.daemon.installer;
 
 import dev.elektronisch.dieter.daemon.DieterDaemonApplication;
 import dev.elektronisch.dieter.daemon.common.installer.AbstractApplicationInstaller;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.UUID;
 
@@ -12,12 +13,12 @@ public final class ApplicationInstaller extends AbstractApplicationInstaller {
     }
 
     @Override
-    protected boolean install(final UUID deviceKey) {
-        return false;
+    protected void install(final UUID deviceKey) throws Exception {
+        throw new NotImplementedException();
     }
 
     @Override
-    protected boolean uninstall() {
-        return false;
+    protected void uninstall() throws Exception {
+        throw new NotImplementedException();
     }
 }

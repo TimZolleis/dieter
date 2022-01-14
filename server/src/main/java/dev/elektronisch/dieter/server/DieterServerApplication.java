@@ -9,7 +9,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 @SpringBootApplication
@@ -37,5 +36,4 @@ public class DieterServerApplication {
                         .license(new License().name("MIT License").url("https://opensource.org/licenses/MIT")))
                 .servers(Collections.singletonList(new Server().url("https://api.devicedieter.de/")));
     }
-
 }

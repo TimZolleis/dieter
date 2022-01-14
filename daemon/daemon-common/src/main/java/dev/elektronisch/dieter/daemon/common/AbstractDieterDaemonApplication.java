@@ -42,7 +42,13 @@ public abstract class AbstractDieterDaemonApplication {
         }
 
         if (!isCurrentUserDaemonUser()) {
-            System.exit(1);
+            final AbstractApplicationInstaller installer = getInstaller();
+            if (installer == null) {
+                System.exit(1);
+                return;
+            }
+
+            installer.run();
             return;
         }
 

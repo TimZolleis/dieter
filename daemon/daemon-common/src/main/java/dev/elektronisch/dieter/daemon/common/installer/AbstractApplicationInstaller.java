@@ -7,10 +7,10 @@ import dev.elektronisch.dieter.daemon.common.configuration.DaemonConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Console;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -24,9 +24,9 @@ public abstract class AbstractApplicationInstaller {
         this.application = application;
     }
 
-    protected abstract boolean install(final UUID deviceKey);
+    protected abstract void install(final UUID deviceKey) throws Exception;
 
-    protected abstract boolean uninstall();
+    protected abstract void uninstall() throws Exception;
 
     public void run() {
         log.info(" ______     _____   ________   _________   ________   _______");
@@ -101,17 +101,36 @@ public abstract class AbstractApplicationInstaller {
         for (int i = 0; i < commands.length; i++) {
             final String command = commands[i];
             final Process process = Runtime.getRuntime().exec(command);
+            final InputStreamReader inputStreamReader = new InputStreamReader(process.getInputStream());
+            final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String line;
+            while ((line = bufferedReader.readLine()) != null)
+                log.info(line);
+
             process.waitFor(1, TimeUnit.MINUTES);
             if (process.exitValue() != 0)
                 throw new IllegalStateException("Exit value of '" + i + "' was: " + process.exitValue());
         }
     }
 
+    protected void extractFile(final String resourceName, final Path targetPath) throws IOException {
+        final InputStream stream = getClass().getResourceAsStream("/" + resourceName);
+        if (stream == null) {
+            throw new IllegalArgumentException("Invalid resource: " + resourceName);
+        }
+
+        Files.copy(stream, targetPath, StandardCopyOption.REPLACE_EXISTING);
+    }
+
     private void internalInstall(final UUID deviceKey) {
         Preconditions.checkArgument(!application.getConfigurationFile().exists(), "configuration must not exist");
+        final long startMillis = System.currentTimeMillis();
 
         log.info("Launching operating-system specific installation...");
-        if (!install(deviceKey)) {
+        try {
+            install(deviceKey);
+        } catch (final Exception e) {
+            log.error("An error occurred while launching operating-system specific installation", e);
             return;
         }
 
@@ -126,13 +145,19 @@ public abstract class AbstractApplicationInstaller {
 
         final DaemonConfiguration configuration = new DaemonConfiguration(getClass().getPackage().getImplementationVersion(), deviceKey);
         ConfigurationUtil.saveConfiguration(application.getConfigurationFile(), configuration);
+
+        log.info("Finished! Installation took: " + (System.currentTimeMillis() - startMillis) + "ms\n");
     }
 
     private void internalUninstall() {
         Preconditions.checkArgument(application.getConfigurationFile().exists(), "configuration must exist");
+        final long startMillis = System.currentTimeMillis();
 
         log.info("Launching operating-system specific uninstallation...");
-        if (!uninstall()) {
+        try {
+            uninstall();
+        } catch (final Exception e) {
+            log.error("An error occurred while launching operating-system specific uninstallation", e);
             return;
         }
 
@@ -144,6 +169,8 @@ public abstract class AbstractApplicationInstaller {
             log.error("An error occurred while deleting configuration", e);
             System.exit(1);
         }
+
+        log.info("Finished! Uninstallation took: " + (System.currentTimeMillis() - startMillis) + "ms\n");
     }
 
     private UUID readUUIDFromConsole() {
