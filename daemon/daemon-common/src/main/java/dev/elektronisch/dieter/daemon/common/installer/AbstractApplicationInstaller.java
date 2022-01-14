@@ -6,6 +6,7 @@ import dev.elektronisch.dieter.daemon.common.configuration.ConfigurationUtil;
 import dev.elektronisch.dieter.daemon.common.configuration.DaemonConfiguration;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -35,7 +36,7 @@ public abstract class AbstractApplicationInstaller {
         log.info("  | |  | |   | |     |  _| _      | |       |  _| _    |  __ /");
         log.info(" _| |_.' /  _| |_   _| |__/ |    _| |_     _| |__/ |  _| |  \\ \\_");
         log.info("|______.'  |_____| |________|   |_____|   |________| |____| |___|");
-        log.info("    :: DIETER {} © 2022 All rights reserved ::\n", getClass().getPackage().getImplementationVersion());
+        log.info("    :: DIETER DAEMON {} ::\n", getClass().getPackage().getImplementationVersion());
         if (application.getConfiguration() != null) {
             log.info("Installed version: " + application.getConfiguration().getApplicationVersion());
             log.info("Device key: " + application.getConfiguration().getDeviceKey() + "\n");
@@ -126,6 +127,14 @@ public abstract class AbstractApplicationInstaller {
         Preconditions.checkArgument(!application.getConfigurationFile().exists(), "configuration must not exist");
         final long startMillis = System.currentTimeMillis();
 
+        log.info("Creating application directory...");
+        try {
+            Files.createDirectories(application.getApplicationDirectory().toPath());
+        } catch (final IOException e) {
+            log.error("An error occurred while creating directories", e);
+            return;
+        }
+
         log.info("Launching operating-system specific installation...");
         try {
             install(deviceKey);
@@ -140,13 +149,13 @@ public abstract class AbstractApplicationInstaller {
             Files.createFile(configurationFilePath);
         } catch (final IOException e) {
             log.error("An error occurred while creating configuration", e);
-            System.exit(1);
+            return;
         }
 
         final DaemonConfiguration configuration = new DaemonConfiguration(getClass().getPackage().getImplementationVersion(), deviceKey);
         ConfigurationUtil.saveConfiguration(application.getConfigurationFile(), configuration);
 
-        log.info("Finished! Installation took: " + (System.currentTimeMillis() - startMillis) + "ms\n");
+        log.info("Finished! Installation took: {}ms\n", System.currentTimeMillis() - startMillis);
     }
 
     private void internalUninstall() {
@@ -161,16 +170,15 @@ public abstract class AbstractApplicationInstaller {
             return;
         }
 
-        log.info("Deleting configuration...");
-        final Path configurationFilePath = application.getConfigurationFile().toPath();
+        log.info("Deleting files...");
         try {
-            Files.delete(configurationFilePath);
+            FileUtils.forceDeleteOnExit(application.getApplicationDirectory());
         } catch (final IOException e) {
-            log.error("An error occurred while deleting configuration", e);
-            System.exit(1);
+            log.error("An error occurred while deleting files", e);
+            return;
         }
 
-        log.info("Finished! Uninstallation took: " + (System.currentTimeMillis() - startMillis) + "ms\n");
+        log.info("Finished! Uninstallation took: {}ms\n", System.currentTimeMillis() - startMillis);
     }
 
     private UUID readUUIDFromConsole() {

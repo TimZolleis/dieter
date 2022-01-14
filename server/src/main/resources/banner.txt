@@ -4,4 +4,4 @@
   | |  | |   | |     |  _| _      | |       |  _| _    |  __ /
  _| |_.' /  _| |_   _| |__/ |    _| |_     _| |__/ |  _| |  \ \_
 |______.'  |_____| |________|   |_____|   |________| |____| |___|
-    :: DIETER${application.formatted-version} using Spring Boot${spring-boot.formatted-version} ::
+    :: DIETER SERVER${application.formatted-version} using Spring Boot${spring-boot.formatted-version} ::

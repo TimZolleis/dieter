@@ -3,7 +3,6 @@ package dev.elektronisch.dieter.daemon.installer;
 import dev.elektronisch.dieter.daemon.DieterDaemonApplication;
 import dev.elektronisch.dieter.daemon.common.installer.AbstractApplicationInstaller;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -27,9 +26,6 @@ public final class ApplicationInstaller extends AbstractApplicationInstaller {
     @Override
     public void install(final UUID deviceKey) throws Exception {
         final File applicationDirectory = getApplication().getApplicationDirectory();
-
-        // Creating application directory
-        Files.createDirectories(applicationDirectory.toPath());
 
         // Copying application
         final Path sourceFilePath = Path.of(getClass()
@@ -61,8 +57,7 @@ public final class ApplicationInstaller extends AbstractApplicationInstaller {
         final Path helperConfigurationPath = Path.of(applicationDirectory.getAbsolutePath(), SERVICE_HELPER_CONFIGURATION_NAME);
         runCommands("\"" + helperExecutablePath + "\" uninstall --no-elevate \"" + helperConfigurationPath + "\"");
 
-        // Delete files
+        // Delete symlink
         Files.delete(Path.of(START_MENU_FOLDER, SYMLINK_NAME));
-        FileUtils.forceDeleteOnExit(getApplication().getApplicationDirectory());
     }
 }
