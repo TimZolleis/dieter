@@ -18,6 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Service
 public final class AuthenticationService {
@@ -59,7 +60,7 @@ public final class AuthenticationService {
                 }).orElseThrow(InvalidCredentialsException::new);
     }
 
-    public void handleRegistration(final RegistrationRequest request) {
+    public UUID handleRegistration(final RegistrationRequest request) {
         if (repository.existsByUsername(request.getUsername())) {
             throw new UsernameTakenException();
         }
@@ -68,13 +69,14 @@ public final class AuthenticationService {
             throw new EmailTakenException();
         }
 
-        repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
-
+        final AccountEntity account = repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
         // TODO send verification mail
+
+        return account.getUuid();
     }
 
     public void handleVerification(final VerificationRequest request) {
-        final AccountEntity account = repository.findById(request.getUuid())
+        final AccountEntity account = repository.findById(request.getUserId())
                 .orElseThrow(AccountNotFoundException::new);
         if (account.isVerified()) {
             throw new AlreadyVerifiedException();
@@ -99,10 +101,11 @@ public final class AuthenticationService {
                 .withIssuer(ISSUER)
                 .withExpiresAt(expirationDate);
 
-        // Checking if user is system-admin
-        if (account.isAdmin()) {
-            builder.withClaim("admin", true);
-        }
+        builder.withClaim("userId", account.getUuid().toString());
+        builder.withClaim("firstName", account.getFirstName());
+        builder.withClaim("lastName", account.getLastName());
+        builder.withClaim("email", account.getEmail());
+        builder.withClaim("admin", account.isAdmin());
 
         return builder.sign(algorithm);
     }

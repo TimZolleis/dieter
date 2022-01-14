@@ -9,6 +9,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public final class VerificationRequest {
+public final class RegistrationResponse {
     private UUID userId;
 }
