@@ -1,4 +1,4 @@
-package dev.elektronisch.dieter.server.service;
+package dev.elektronisch.dieter.server.account;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -10,9 +10,8 @@ import dev.elektronisch.dieter.common.model.authentication.LoginRequest;
 import dev.elektronisch.dieter.common.model.authentication.RegistrationRequest;
 import dev.elektronisch.dieter.common.model.authentication.TokenResponse;
 import dev.elektronisch.dieter.common.model.authentication.VerificationRequest;
-import dev.elektronisch.dieter.server.entity.AccountEntity;
 import dev.elektronisch.dieter.server.exception.*;
-import dev.elektronisch.dieter.server.repository.AccountRepository;
+import dev.elektronisch.dieter.server.mail.MailingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +26,7 @@ public final class AuthenticationService {
 
     private final AccountRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final MailingService mailingService;
 
     private final Algorithm algorithm;
     private final JWTVerifier verifier;
@@ -34,10 +34,12 @@ public final class AuthenticationService {
 
     public AuthenticationService(final AccountRepository repository,
                                  final PasswordEncoder passwordEncoder,
+                                 final MailingService mailingService,
                                  @Value("${jwt.secret}") final String secret,
                                  @Value("${jwt.millisToLive}") final long millisToLive) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
+        this.mailingService = mailingService;
         this.algorithm = Algorithm.HMAC512(secret);
         this.verifier = JWT.require(algorithm)
                 .withIssuer(ISSUER)
@@ -70,9 +72,12 @@ public final class AuthenticationService {
         }
 
         final AccountEntity account = repository.save(new AccountEntity(request.getUsername(), request.getFirstName(), request.getLastName(), request.getEmail(), passwordEncoder.encode(request.getPassword())));
-        // TODO send verification mail
 
-        return account.getUuid();
+        final String fullName = account.getFirstName() + " " + account.getLastName();
+        mailingService.sendMail(fullName, account.getEmail(), "verification",
+                "%name%", fullName, "%userId%", account.getId().toString());
+
+        return account.getId();
     }
 
     public void handleVerification(final VerificationRequest request) {
@@ -101,7 +106,7 @@ public final class AuthenticationService {
                 .withIssuer(ISSUER)
                 .withExpiresAt(expirationDate);
 
-        builder.withClaim("userId", account.getUuid().toString());
+        builder.withClaim("userId", account.getId().toString());
         builder.withClaim("firstName", account.getFirstName());
         builder.withClaim("lastName", account.getLastName());
         builder.withClaim("email", account.getEmail());

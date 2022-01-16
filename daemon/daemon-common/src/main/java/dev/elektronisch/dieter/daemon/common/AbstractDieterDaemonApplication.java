@@ -1,7 +1,7 @@
 package dev.elektronisch.dieter.daemon.common;
 
 import com.google.common.base.Preconditions;
-import dev.elektronisch.dieter.client.DaemonDieterClient;
+import dev.elektronisch.dieter.daemon.common.communication.DaemonCommunicationService;
 import dev.elektronisch.dieter.daemon.common.configuration.ConfigurationUtil;
 import dev.elektronisch.dieter.daemon.common.configuration.DaemonConfiguration;
 import dev.elektronisch.dieter.daemon.common.installer.AbstractApplicationInstaller;
@@ -18,7 +18,8 @@ public abstract class AbstractDieterDaemonApplication {
 
     private File configurationFile;
     private DaemonConfiguration configuration;
-    private DaemonDieterClient client;
+
+    private DaemonCommunicationService communicationService;
 
     void internalEnable() {
         final File workingDirectory = determineWorkingDirectory();
@@ -52,10 +53,11 @@ public abstract class AbstractDieterDaemonApplication {
             return;
         }
 
-        log.info("Starting client... (Key: {})", configuration.getDeviceKey());
-        client = new DaemonDieterClient(configuration.getDeviceKey());
+        log.info("Version: {}", configuration.getApplicationVersion());
+        log.info("Key: {}\n", configuration.getDeviceKey());
 
-        // TODO send heartbeats, handle tasks
+        log.info("Starting communication service...");
+        communicationService = new DaemonCommunicationService(this);
 
         log.info("Enabling operating-system implementation...");
         enable();

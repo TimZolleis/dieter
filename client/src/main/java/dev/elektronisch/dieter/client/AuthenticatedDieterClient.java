@@ -10,14 +10,11 @@ import okhttp3.Request;
 import retrofit2.Call;
 import retrofit2.Response;
 
-import java.io.IOException;
-
 @Slf4j
 public final class AuthenticatedDieterClient extends AbstractDieterClient {
 
     private final String username;
     private final String password;
-
     private final AuthenticationService authenticationService;
 
     private String authorizationToken;
@@ -31,7 +28,6 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
         super(endpointUrl);
         this.username = username;
         this.password = password;
-
         this.authenticationService = getRetrofit().create(AuthenticationService.class);
         login();
     }
@@ -53,21 +49,13 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
         final LoginRequest loginRequest = new LoginRequest(username, password);
         final Call<TokenResponse> loginCall = authenticationService.login(loginRequest);
 
-        try {
-            final Response<TokenResponse> response = loginCall.execute();
-            if (response.code() != 200) {
-                throw new ApiException(parseError(response));
-            }
-
-            final TokenResponse tokenResponse = response.body();
-            if (tokenResponse == null) {
-                return;
-            }
-
-            authorizationToken = tokenResponse.getToken();
-            tokenExpirationDate = tokenResponse.getExpirationDate();
-        } catch (IOException e) {
-            log.error("An exception occurred while logging-in", e);
+        final Response<TokenResponse> response = handleCall(loginCall);
+        final TokenResponse tokenResponse = response.body();
+        if (tokenResponse == null) {
+            return;
         }
+
+        authorizationToken = tokenResponse.getToken();
+        tokenExpirationDate = tokenResponse.getExpirationDate();
     }
 }

@@ -3,10 +3,12 @@ package dev.elektronisch.dieter.client;
 import com.google.gson.Gson;
 import com.google.gson.JsonParseException;
 import dev.elektronisch.dieter.client.api.ApiError;
+import dev.elektronisch.dieter.client.api.ApiException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
+import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -18,7 +20,8 @@ import java.io.IOException;
 public abstract class AbstractDieterClient {
 
     protected static final String DEFAULT_ENDPOINT_URL = "http://localhost:8080/";
-    private static final ApiError UNKNOWN_ERROR = new ApiError("UNKNOWN_ERROR", null);
+
+    private static final ApiError EMPTY_BODY = new ApiError("EMPTY_BODY", null);
 
     private final String endpointUrl;
     private final OkHttpClient client;
@@ -46,22 +49,34 @@ public abstract class AbstractDieterClient {
         return null;
     }
 
+    protected <T> Response<T> handleCall(final Call<T> call) throws ApiException {
+        try {
+            final Response<T> response = call.execute();
+            if (!response.isSuccessful()) {
+                throw new ApiException(parseError(response));
+            }
+
+            return response;
+        } catch (final IOException e) {
+            throw new ApiException(e);
+        }
+    }
+
     protected ApiError parseError(final Response<?> response) {
         final String contentType = response.headers().get("Content-Type");
         if (contentType == null || !contentType.equals("application/json")) {
-            return UNKNOWN_ERROR;
+            return new ApiError("INVALID_CONTENT_TYPE", contentType + " is invalid");
         }
 
         if (response.errorBody() == null) {
-            return UNKNOWN_ERROR;
+            return EMPTY_BODY;
         }
 
         try {
             final String rawBody = response.errorBody().string();
             return gson.fromJson(rawBody, ApiError.class);
-        } catch (IOException | JsonParseException e) {
-            log.error("An exception occurred while parsing error", e);
-            return UNKNOWN_ERROR;
+        } catch (final IOException | JsonParseException e) {
+            return new ApiError(e);
         }
     }
 }

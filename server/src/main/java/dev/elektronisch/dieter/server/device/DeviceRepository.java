@@ -1,6 +1,5 @@
-package dev.elektronisch.dieter.server.repository;
+package dev.elektronisch.dieter.server.device;
 
-import dev.elektronisch.dieter.server.entity.DeviceEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

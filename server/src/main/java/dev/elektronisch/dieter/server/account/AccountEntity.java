@@ -1,4 +1,4 @@
-package dev.elektronisch.dieter.server.entity;
+package dev.elektronisch.dieter.server.account;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,7 +27,7 @@ public final class AccountEntity {
             strategy = "org.hibernate.id.UUIDGenerator"
     )
     @Column(name = "id", nullable = false, updatable = false)
-    private UUID uuid;
+    private UUID id;
     @Column(name = "username", nullable = false, unique = true)
     private String username;
     @Column(name = "first_name", nullable = false)

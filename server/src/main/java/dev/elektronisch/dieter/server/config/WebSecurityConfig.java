@@ -37,9 +37,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/").permitAll()
                 .antMatchers("/login").permitAll()
                 .antMatchers("/register").permitAll()
+                .antMatchers("/verify").permitAll()
+                .antMatchers("/device/register/**").permitAll()
+                .antMatchers("/device/heartbeat/**").permitAll()
                 .antMatchers("/api-docs/**").permitAll()
                 .antMatchers("/swagger-ui/**").permitAll()
-                .antMatchers("/verify/**").permitAll()
                 .anyRequest().authenticated();
 
         httpSecurity.addFilterBefore(tokenFilter, UsernamePasswordAuthenticationFilter.class);

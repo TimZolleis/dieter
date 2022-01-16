@@ -1,6 +1,6 @@
-package dev.elektronisch.dieter.server.repository;
+package dev.elektronisch.dieter.server.account;
 
-import dev.elektronisch.dieter.server.entity.AccountEntity;
+import dev.elektronisch.dieter.server.account.AccountEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

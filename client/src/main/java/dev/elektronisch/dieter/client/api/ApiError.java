@@ -12,4 +12,9 @@ import lombok.ToString;
 public final class ApiError {
     private String code;
     private String message;
+
+    public ApiError(final Throwable cause) {
+        this.code = "CLIENT_EXCEPTION";
+        this.message = cause.toString();
+    }
 }

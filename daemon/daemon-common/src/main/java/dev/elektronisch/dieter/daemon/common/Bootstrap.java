@@ -1,9 +1,6 @@
 package dev.elektronisch.dieter.daemon.common;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configurator;
 
 import java.util.function.Supplier;
 
@@ -17,11 +14,7 @@ public final class Bootstrap {
     public static void run(final Supplier<AbstractDieterDaemonApplication> supplier) {
         final AbstractDieterDaemonApplication application = supplier.get();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            application.internalDisable();
-            Configurator.shutdown((LoggerContext) LogManager.getContext());
-        }));
-
+        Runtime.getRuntime().addShutdownHook(new Thread(application::internalDisable));
         new Thread(application::internalEnable).start();
 
         try {

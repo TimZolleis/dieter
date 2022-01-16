@@ -1,9 +1,8 @@
-package dev.elektronisch.dieter.server.controller;
+package dev.elektronisch.dieter.server.account;
 
 import dev.elektronisch.dieter.common.model.authentication.*;
 import dev.elektronisch.dieter.server.exception.AlreadyAuthenticatedException;
 import dev.elektronisch.dieter.server.security.JWTAuthentication;
-import dev.elektronisch.dieter.server.service.AuthenticationService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
