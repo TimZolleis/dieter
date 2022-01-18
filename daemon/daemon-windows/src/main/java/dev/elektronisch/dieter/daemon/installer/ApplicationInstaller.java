@@ -58,6 +58,6 @@ public final class ApplicationInstaller extends AbstractApplicationInstaller {
         runCommands("\"" + helperExecutablePath + "\" uninstall --no-elevate \"" + helperConfigurationPath + "\"");
 
         // Delete symlink
-        Files.delete(Path.of(START_MENU_FOLDER, SYMLINK_NAME));
+        Files.deleteIfExists(Path.of(START_MENU_FOLDER, SYMLINK_NAME));
     }
 }
