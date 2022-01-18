@@ -19,7 +19,7 @@ import java.io.IOException;
 @Getter
 public abstract class AbstractDieterClient {
 
-    protected static final String DEFAULT_ENDPOINT_URL = "http://localhost:8080/";
+    protected static final String DEFAULT_ENDPOINT_URL = "https://api.devicedieter.de/";
 
     private static final ApiError EMPTY_BODY = new ApiError("EMPTY_BODY", null);
 

@@ -1,6 +1,6 @@
 package dev.elektronisch.dieter.server.account;
 
-import dev.elektronisch.dieter.common.model.authentication.*;
+import dev.elektronisch.dieter.common.dto.authentication.*;
 import dev.elektronisch.dieter.server.exception.AlreadyAuthenticatedException;
 import dev.elektronisch.dieter.server.security.JWTAuthentication;
 import org.springframework.http.HttpStatus;
@@ -12,11 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public final class AuthenticationController {
+public final class AccountController {
 
-    private final AuthenticationService service;
+    private final AccountService service;
 
-    public AuthenticationController(final AuthenticationService service) {
+    public AccountController(final AccountService service) {
         this.service = service;
     }
 

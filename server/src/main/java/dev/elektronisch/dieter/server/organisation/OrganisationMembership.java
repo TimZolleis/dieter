@@ -1,4 +1,4 @@
-package dev.elektronisch.dieter.server.device;
+package dev.elektronisch.dieter.server.organisation;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -6,19 +6,18 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.UUID;
 
 @Entity
-@Table(name = "dieter_devices")
+@Table(name = "dieter_organisation_memberships")
 @NoArgsConstructor
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-public final class DeviceEntity {
+public final class OrganisationMembership {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -28,20 +27,12 @@ public final class DeviceEntity {
     )
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
+    @Column(name = "account_id", nullable = false)
+    private UUID accountId;
     @Column(name = "organisation_id", nullable = false)
     private UUID organisationId;
-    @Column(name = "mac_address", nullable = false)
-    private String macAddress;
-    @Column(name = "ip_address", nullable = false)
-    private String ipAddress;
-    @Column(name = "hostname", nullable = false)
-    private String hostname;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Date createdAt;
-    @UpdateTimestamp
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified_at", nullable = false)
-    private Date modifiedAt;
 }

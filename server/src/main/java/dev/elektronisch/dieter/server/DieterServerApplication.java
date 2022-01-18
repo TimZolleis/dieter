@@ -1,10 +1,12 @@
 package dev.elektronisch.dieter.server;
 
+import dev.elektronisch.dieter.server.device.DeviceConfigurationProperties;
 import dev.elektronisch.dieter.server.mail.MailConfigurationProperties;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.servers.Server;
+import org.modelmapper.ModelMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -14,7 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import java.util.Collections;
 
 @SpringBootApplication
-@EnableConfigurationProperties(MailConfigurationProperties.class)
+@EnableConfigurationProperties({MailConfigurationProperties.class, DeviceConfigurationProperties.class})
 public class DieterServerApplication {
 
     public DieterServerApplication() {
@@ -38,5 +40,10 @@ public class DieterServerApplication {
                         .version(getClass().getPackage().getImplementationVersion())
                         .license(new License().name("MIT License").url("https://opensource.org/licenses/MIT")))
                 .servers(Collections.singletonList(new Server().url("https://api.devicedieter.de/")));
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }

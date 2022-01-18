@@ -1,7 +1,7 @@
 package dev.elektronisch.dieter.server.security;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import dev.elektronisch.dieter.server.account.AuthenticationService;
+import dev.elektronisch.dieter.server.account.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,10 +19,10 @@ import java.io.IOException;
 @Slf4j
 public final class JWTAuthenticationTokenFilter extends OncePerRequestFilter {
 
-    private final AuthenticationService authenticationService;
+    private final AccountService authenticationService;
     private final String headerName;
 
-    public JWTAuthenticationTokenFilter(final AuthenticationService authenticationService,
+    public JWTAuthenticationTokenFilter(final AccountService authenticationService,
                                         @Value("${jwt.header}") final String headerName) {
         this.authenticationService = authenticationService;
         this.headerName = headerName;

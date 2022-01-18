@@ -6,40 +6,48 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import dev.elektronisch.dieter.common.model.authentication.LoginRequest;
-import dev.elektronisch.dieter.common.model.authentication.RegistrationRequest;
-import dev.elektronisch.dieter.common.model.authentication.TokenResponse;
-import dev.elektronisch.dieter.common.model.authentication.VerificationRequest;
+import dev.elektronisch.dieter.common.dto.authentication.LoginRequest;
+import dev.elektronisch.dieter.common.dto.authentication.RegistrationRequest;
+import dev.elektronisch.dieter.common.dto.authentication.TokenResponse;
+import dev.elektronisch.dieter.common.dto.authentication.VerificationRequest;
 import dev.elektronisch.dieter.server.exception.*;
 import dev.elektronisch.dieter.server.mail.MailingService;
+import dev.elektronisch.dieter.server.organisation.OrganisationMembership;
+import dev.elektronisch.dieter.server.organisation.OrganisationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
-public final class AuthenticationService {
+public final class AccountService {
 
     private static final String ISSUER = "dieter";
 
     private final AccountRepository repository;
+
     private final PasswordEncoder passwordEncoder;
     private final MailingService mailingService;
+    private final OrganisationService organisationService;
 
     private final Algorithm algorithm;
     private final JWTVerifier verifier;
     private final long millisToLive;
 
-    public AuthenticationService(final AccountRepository repository,
-                                 final PasswordEncoder passwordEncoder,
-                                 final MailingService mailingService,
-                                 @Value("${jwt.secret}") final String secret,
-                                 @Value("${jwt.millisToLive}") final long millisToLive) {
+    public AccountService(final AccountRepository repository,
+                          final PasswordEncoder passwordEncoder,
+                          final MailingService mailingService,
+                          final OrganisationService organisationService,
+                          @Value("${jwt.secret}") final String secret,
+                          @Value("${jwt.millisToLive}") final long millisToLive) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.mailingService = mailingService;
+        this.organisationService = organisationService;
         this.algorithm = Algorithm.HMAC512(secret);
         this.verifier = JWT.require(algorithm)
                 .withIssuer(ISSUER)
@@ -106,11 +114,17 @@ public final class AuthenticationService {
                 .withIssuer(ISSUER)
                 .withExpiresAt(expirationDate);
 
-        builder.withClaim("userId", account.getId().toString());
+        builder.withClaim("accountId", account.getId().toString());
         builder.withClaim("firstName", account.getFirstName());
         builder.withClaim("lastName", account.getLastName());
         builder.withClaim("email", account.getEmail());
         builder.withClaim("admin", account.isAdmin());
+
+        final List<String> organisationIds = organisationService.getMemberships(account.getId()).stream()
+                .map(OrganisationMembership::getOrganisationId)
+                .map(UUID::toString)
+                .collect(Collectors.toList());
+        builder.withClaim("organisations", organisationIds);
 
         return builder.sign(algorithm);
     }

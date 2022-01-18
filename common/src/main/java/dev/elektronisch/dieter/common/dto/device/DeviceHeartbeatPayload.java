@@ -1,6 +1,5 @@
-package dev.elektronisch.dieter.common.model.device;
+package dev.elektronisch.dieter.common.dto.device;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

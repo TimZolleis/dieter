@@ -10,4 +10,7 @@
         <keepFiles>8</keepFiles>
     </log>
     <logpath>C:\Program Files\Dieter\logs</logpath>
+    <depend>tcpip</depend>
+    <depend>dhcp</depend>
+    <depend>dnscache</depend>
 </service>
