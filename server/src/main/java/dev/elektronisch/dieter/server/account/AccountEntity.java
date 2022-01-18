@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
@@ -26,6 +27,7 @@ public final class AccountEntity {
             name = "UUID",
             strategy = "org.hibernate.id.UUIDGenerator"
     )
+    @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
     @Column(name = "username", nullable = false, unique = true)
