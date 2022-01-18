@@ -29,6 +29,12 @@ public final class DeviceController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/unregister/{deviceId}")
+    public ResponseEntity<Void> unregister(@PathVariable("deviceId") final UUID deviceId) {
+        service.handleTermination(deviceId, TerminationReason.UNREGISTER);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
     @PostMapping("/heartbeat/{deviceId}")
     public ResponseEntity<DeviceHeartbeatResponse> heartbeat(@PathVariable("deviceId") final UUID deviceId,
                                                              @RequestBody final DeviceHeartbeatPayload payload) {

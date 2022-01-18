@@ -22,6 +22,8 @@ public abstract class AbstractDieterClient {
     protected static final String DEFAULT_ENDPOINT_URL = "https://api.devicedieter.de/";
 
     private static final ApiError EMPTY_BODY = new ApiError("EMPTY_BODY", null);
+    private static final ApiError SERVICE_UNAVAILABLE = new ApiError("SERVICE_UNAVAILABLE", null);
+    private static final int SERVICE_UNAVAILABLE_CODE = 503;
 
     private final String endpointUrl;
     private final OkHttpClient client;
@@ -63,6 +65,10 @@ public abstract class AbstractDieterClient {
     }
 
     protected ApiError parseError(final Response<?> response) {
+        if (response.code() == SERVICE_UNAVAILABLE_CODE) {
+            return SERVICE_UNAVAILABLE;
+        }
+
         final String contentType = response.headers().get("Content-Type");
         if (contentType == null || !contentType.equals("application/json")) {
             return new ApiError("INVALID_CONTENT_TYPE", contentType + " is invalid");

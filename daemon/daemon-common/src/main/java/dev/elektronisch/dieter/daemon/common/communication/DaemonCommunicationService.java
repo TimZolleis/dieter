@@ -61,8 +61,14 @@ public final class DaemonCommunicationService {
     private void initializeHeartbeat(final long periodMillis) {
         executorService.scheduleAtFixedRate(() -> {
             final DeviceHeartbeatPayload payload = new DeviceHeartbeatPayload();
-            final DeviceHeartbeatResponse response = client.heartbeat(payload);
-            log.info("Heartbeat performed! {}", response.getBlob());
+            try {
+                final DeviceHeartbeatResponse response = client.heartbeat(payload);
+                log.info("Heartbeat performed! {}", response.getBlob());
+            } catch (final ApiException e) {
+                log.error("An error occurred while performing heartbeat", e);
+                // TODO proper error handling and reconnection without service restart
+                System.exit(1);
+            }
         }, 0, periodMillis, TimeUnit.MILLISECONDS);
     }
 }

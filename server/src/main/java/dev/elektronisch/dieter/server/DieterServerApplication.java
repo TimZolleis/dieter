@@ -11,12 +11,14 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Collections;
 
 @SpringBootApplication
 @EnableConfigurationProperties({MailConfigurationProperties.class, DeviceConfigurationProperties.class})
+@EnableScheduling
 public class DieterServerApplication {
 
     public DieterServerApplication() {

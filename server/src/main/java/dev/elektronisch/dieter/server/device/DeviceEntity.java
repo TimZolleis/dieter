@@ -1,5 +1,6 @@
 package dev.elektronisch.dieter.server.device;
 
+import dev.elektronisch.dieter.common.dto.device.TerminationReason;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,8 @@ public final class DeviceEntity {
     private String ipAddress;
     @Column(name = "hostname", nullable = false)
     private String hostname;
+    @Column(name = "last_termination_reason")
+    private TerminationReason terminationReason;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created_at", nullable = false, updatable = false)

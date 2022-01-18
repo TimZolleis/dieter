@@ -15,6 +15,7 @@ public final class Device {
     private String hostname;
     private long createdAt;
     private long modifiedAt;
+    private TerminationReason terminationReason;
 
     private boolean online;
     private long lastHeartbeatAt;
