@@ -83,13 +83,13 @@ public final class AccountService {
 
         final String fullName = account.getFirstName() + " " + account.getLastName();
         mailingService.sendMail(fullName, account.getEmail(), "verification",
-                "%name%", fullName, "%userId%", account.getId().toString());
+                "%name%", fullName, "%accountId%", account.getId().toString());
 
         return account.getId();
     }
 
     public void handleVerification(final VerificationRequest request) {
-        final AccountEntity account = repository.findById(request.getUserId())
+        final AccountEntity account = repository.findById(request.getAccountId())
                 .orElseThrow(AccountNotFoundException::new);
         if (account.isVerified()) {
             throw new AlreadyVerifiedException();

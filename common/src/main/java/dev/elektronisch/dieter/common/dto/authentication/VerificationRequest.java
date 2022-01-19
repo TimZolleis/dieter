@@ -10,5 +10,5 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public final class VerificationRequest {
-    private UUID userId;
+    private UUID accountId;
 }

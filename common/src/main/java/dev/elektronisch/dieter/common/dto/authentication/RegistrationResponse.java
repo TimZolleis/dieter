@@ -10,5 +10,5 @@ import java.util.UUID;
 @AllArgsConstructor
 @Getter
 public final class RegistrationResponse {
-    private UUID userId;
+    private UUID accountId;
 }
