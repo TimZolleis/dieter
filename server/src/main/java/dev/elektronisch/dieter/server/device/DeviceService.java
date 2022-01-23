@@ -42,20 +42,20 @@ public final class DeviceService {
         final DeviceEntity entity = getDevice(deviceId);
 
         // Update entity
-        entity.setMacAddress(payload.getMacAddress());
-        entity.setIpAddress(payload.getIpAddress());
-        entity.setHostname(payload.getHostname());
         entity.setTerminationReason(null);
         repository.save(entity);
 
         // Create information
         final DeviceInformation information = new DeviceInformation();
         information.setEntity(entity);
+        information.setOperatingSystem(payload.getOperatingSystem());
+        information.setAvailableRam(payload.getAvailableRam());
+        information.setProcessorCount(payload.getProcessorCount());
         information.setRegisteredAt(System.currentTimeMillis());
         information.setLastHeartbeatAt(System.currentTimeMillis());
         informationMap.put(deviceId, information);
 
-        log.info("Device '{} ({})' was registered", information.getEntity().getId(), information.getEntity().getHostname());
+        log.info("Device '{} ({})' was registered", information.getEntity().getId(), information.getEntity().getName());
 
         // Send response
         return new DeviceRegistrationResponse(properties.heartbeatPeriodMillis());
@@ -67,13 +67,14 @@ public final class DeviceService {
             throw new DeviceNotRegisteredException();
         }
 
+        // Update entity
         final DeviceEntity entity = getDevice(deviceId);
-        // Set termination reason
         entity.setTerminationReason(reason);
+        entity.setLastSeenAt(new Date());
         repository.save(entity);
 
         log.info("Device '{} ({})' terminated due to '{}'", information.getEntity().getId(),
-                information.getEntity().getHostname(), reason);
+                information.getEntity().getName(), reason);
     }
 
     public DeviceHeartbeatResponse handleHeartbeat(final UUID deviceId, final DeviceHeartbeatPayload payload) {
@@ -82,10 +83,16 @@ public final class DeviceService {
             throw new DeviceNotRegisteredException();
         }
 
+        // Update information
+        information.setMacAddress(payload.getMacAddress());
+        information.setIpAddress(payload.getIpAddress());
+        information.setHostname(payload.getHostname());
+        information.setUsedRam(payload.getUsedRam());
+        information.setLoad(payload.getLoad());
         information.setLastHeartbeatAt(System.currentTimeMillis());
         informationMap.put(deviceId, information);
 
-        log.info("Device '{} ({})' reported heartbeat", information.getEntity().getId(), information.getEntity().getHostname());
+        log.info("Device '{} ({})' sent heartbeat", information.getEntity().getId(), information.getEntity().getName());
 
         // TODO build response
         return new DeviceHeartbeatResponse("test");

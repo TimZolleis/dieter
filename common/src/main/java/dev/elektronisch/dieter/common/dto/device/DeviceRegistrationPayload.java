@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Getter
 public final class DeviceRegistrationPayload {
-    private String macAddress;
-    private String ipAddress;
-    private String hostname;
+    private OperatingSystem operatingSystem;
+    private int availableRam;
+    private int processorCount;
 }

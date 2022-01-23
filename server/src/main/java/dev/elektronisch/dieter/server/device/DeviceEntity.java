@@ -31,16 +31,12 @@ public final class DeviceEntity {
     @Type(type = "uuid-char")
     @Column(name = "id", nullable = false, updatable = false)
     private UUID id;
+    @Column(name = "name", nullable = false)
+    private String name;
     @Type(type = "uuid-char")
     @Column(name = "organisation_id", nullable = false)
     private UUID organisationId;
-    @Column(name = "mac_address", nullable = false)
-    private String macAddress;
-    @Column(name = "ip_address", nullable = false)
-    private String ipAddress;
-    @Column(name = "hostname", nullable = false)
-    private String hostname;
-    @Column(name = "last_termination_reason")
+    @Column(name = "termination_reason")
     private TerminationReason terminationReason;
     @CreationTimestamp
     @Temporal(TemporalType.TIMESTAMP)
@@ -50,4 +46,7 @@ public final class DeviceEntity {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified_at", nullable = false)
     private Date modifiedAt;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "last_seen_at", nullable = false, updatable = false)
+    private Date lastSeenAt;
 }
