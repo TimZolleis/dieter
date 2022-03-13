@@ -28,11 +28,6 @@ public final class AuthenticatedDieterClient extends AbstractDieterClient {
     private long tokenExpirationDate;
 
     public AuthenticatedDieterClient(final String username, final String password) {
-        this(DEFAULT_ENDPOINT_URL, username, password);
-    }
-
-    public AuthenticatedDieterClient(final String endpointUrl, final String username, final String password) {
-        super(endpointUrl);
         this.username = username;
         this.password = password;
 

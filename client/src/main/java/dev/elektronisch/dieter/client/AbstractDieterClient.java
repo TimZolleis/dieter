@@ -19,20 +19,16 @@ import java.io.IOException;
 @Getter
 public abstract class AbstractDieterClient {
 
-    protected static final String DEFAULT_ENDPOINT_URL = "https://api.devicedieter.de/";
-
+    private static final String ENDPOINT_URL = "https://api.devicedieter.de/";
     private static final ApiError EMPTY_BODY = new ApiError("EMPTY_BODY", null);
     private static final ApiError SERVICE_UNAVAILABLE = new ApiError("SERVICE_UNAVAILABLE", null);
     private static final int SERVICE_UNAVAILABLE_CODE = 503;
 
-    private final String endpointUrl;
     private final OkHttpClient client;
     private final Gson gson;
     private final Retrofit retrofit;
 
-    protected AbstractDieterClient(final String endpointUrl) {
-        this.endpointUrl = endpointUrl;
-
+    protected AbstractDieterClient() {
         final OkHttpClient.Builder builder = new OkHttpClient.Builder();
         final Interceptor interceptor = getInterceptor();
         if (interceptor != null) {
@@ -41,7 +37,7 @@ public abstract class AbstractDieterClient {
         this.client = builder.build();
         this.gson = new Gson();
         this.retrofit = new Retrofit.Builder()
-                .baseUrl(endpointUrl)
+                .baseUrl(ENDPOINT_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(client)
                 .build();

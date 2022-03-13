@@ -12,9 +12,6 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.util.UUID;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 @Getter
 @Slf4j
@@ -24,11 +21,6 @@ public final class DaemonDieterClient extends AbstractDieterClient {
     private final DeviceService deviceService;
 
     public DaemonDieterClient(final UUID deviceIdentifier) {
-        this(DEFAULT_ENDPOINT_URL, deviceIdentifier);
-    }
-
-    public DaemonDieterClient(final String endpointUrl, final UUID deviceIdentifier) {
-        super(endpointUrl);
         this.deviceId = deviceIdentifier;
         this.deviceService = getRetrofit().create(DeviceService.class);
     }
